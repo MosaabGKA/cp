@@ -1,3 +1,4 @@
+// this is just to get min and max in the queue
 struct myQ {
     stack<int> left, leftmn, leftmx;
     stack<int> right, rightmn, rightmx;
