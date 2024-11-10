@@ -1,12 +1,57 @@
-ll gcd(ll a, ll b) { // O(log max(a,b))
-    return b ? gcd(b, a % b) : a;
+const int N = 1e7 + 9, M = 1e9 + 7;
+
+// smallest prime factor of [i]
+vector<int> spf(N);
+// sieve O( N * log(log(N)) )
+void generate_spf() {
+    for (int i = 2; i < N; i++)
+        if (!spf[i])
+            for (int j = i; j < N; j += i)
+                if (!spf[j])
+                    spf[j] = i;
 }
 
-ll lcm(ll a, ll b) { // O(log max(a,b))
-    return a / gcd(a, b) * b;
+// O( log(x) )
+vector<int> prime_factors(int x) {
+    vector<int> primes;
+    while (x > 1) {
+        primes.push_back(spf[x]);
+        x /= spf[x];
+    }
+    return primes;
 }
 
-ll fp(ll b, ll p, ll m = M) { // O(log p)
+// O( log(x) * log(x) )
+set<int> distinct_prime_factors(int x) {
+    set<int> primes;
+    while (x > 1) {
+        primes.insert(spf[x]);
+        x /= spf[x];
+    }
+    return primes;
+}
+
+// vector contains divisors of [i] sorted
+vector<vector<int> > divisors(N);
+// generated O( N * log(N) )
+void generate_divisors() {
+    for (int i = 1; i < N; i++)
+        for (int j = i; j < N; j += i)
+            divisors[j].push_back(i);
+}
+
+// O( log(min(a,b)) )
+ll mygcd(ll a, ll b) {
+    return b ? mygcd(b, a % b) : a;
+}
+
+// O( log(min(a,b)) )
+ll mylcm(ll a, ll b) {
+    return a / mygcd(a, b) * b;
+}
+
+// (b^p)%M  O( log p )
+ll fp(ll b, ll p, ll m = M) {
     if (!p) return 1;
     auto res = fp(b, p / 2, m);
     res = res * res % m;
@@ -14,24 +59,39 @@ ll fp(ll b, ll p, ll m = M) { // O(log p)
     return res;
 }
 
-bool is_prime(ll x) { // O(sqrt x)
-    bool prime = 1;
-    for (ll i = 2; i * i <= x; i++) {
-        if (x % i == 0) {
-            prime = 0;
-        }
-    }
-    return prime;
+// for a*x + b*y = gcd(a,b)
+// returns auto [x,y,g]: possible value for x and y and the gcd(a,b)
+// O( log(min(a,b)) )
+tuple<ll, ll, ll> extgcd(ll a, ll b) {
+    if (b == 0) return {1, 0, a};
+    auto [y, x, g] = extgcd(b, a % b);
+    y -= a / b * x;
+    return {x, y, g};
 }
 
-vector<ll> divisors(ll x) { // O(sqrt x)
-    vector<ll> divs;
+// O( sqrt(x) )
+bool is_prime(ll x) {
+    if (x == 2) return 1;
+    if (x < 2 || x % 2 == 0) return 0;
+    for (ll i = 3; i * i <= x; i += 2)
+        if (x % i == 0) return 0;
+    return 1;
+}
+
+// O( 1 )
+bool is_prime_pre(ll x) {
+    return spf[x] == x;
+}
+
+// O( sqrt(x) ) // not sorted
+vector<ll> divs(ll x) {
+    vector<ll> d;
     for (ll i = 1; i * i <= x; i++) {
         if (x % i == 0) {
-            divs.push_back(i);
-            if (i != x / i)divs.push_back(x / i);
+            d.push_back(i);
+            if (i != x / i)
+                d.push_back(x / i);
         }
     }
-    sort(divs.begin(), divs.end());
-    return divs;
+    return d;
 }
