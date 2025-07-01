@@ -11,14 +11,14 @@ struct seg {
     }
 
     void mrg(node *&left, node *&right, node *&result) {
-        *result = {left, right,};
-        if (left) result->sum = (result->sum + left->sum) % M;
-        if (right) result->sum = (result->sum + right->sum) % M;
+        *result = {left, right, 0};
+        if (left) result->sum += left->sum;
+        if (right) result->sum += right->sum;
     }
 
     void upd(node *&nd, int l, int r, int idx, int x) {
         if (l == r) {
-            nd->sum = (nd->sum + x) % M;
+            nd->sum += x;
             return;
         }
         int mid = l + r >> 1;
@@ -36,8 +36,8 @@ struct seg {
         if (l >= lx && r <= rx) return nd->sum;
         if (l > rx || r < lx) return 0;
         int mid = l + r >> 1, q = 0;
-        if (nd->l) q = (q + qry(nd->l, l, mid, lx, rx)) % M;
-        if (nd->r) q = (q + qry(nd->r, mid + 1, r, lx, rx)) % M;
+        if (nd->l) q += qry(nd->l, l, mid, lx, rx);
+        if (nd->r) q += qry(nd->r, mid + 1, r, lx, rx);
         return q;
     }
 };

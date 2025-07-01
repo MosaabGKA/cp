@@ -1,3 +1,4 @@
-//
-// Created by Uranus on 2025-07-01.
-//
+#include <bits/stdc++.h>
+using namespace std;
+signed main(){
+}
