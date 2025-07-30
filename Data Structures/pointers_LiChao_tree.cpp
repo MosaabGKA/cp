@@ -9,6 +9,8 @@ struct Line {
     }
 };
 
+// gets min value of m*x + c
+// if want max insert lines(-m,-c) and qry=-qry
 struct node {
     Line ln;
     node *l{}, *r{};
